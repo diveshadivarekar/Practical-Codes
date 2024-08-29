@@ -7,7 +7,9 @@ using namespace std;
 class student
 {
 public:
-    string name = "N/A";
+	static int record_count;
+	
+	string name = "N/A";
     string rollno = "N/A";
     string cname = "N/A";
     string div = "N/A";
@@ -16,9 +18,21 @@ public:
     string add = "N/A";
     string num = "N/A";
     string licence = "N/A";
-
+    
+	student(){
+		record_count++;
+	}
+	
+	static int getcount(){
+		return record_count;
+	}
+	
+	~student(){}
+	
     friend class studentinfo;
 };
+
+int student::record_count = 0;
 
 class studentinfo
 {
@@ -74,7 +88,10 @@ public:
         cout << "Enter Licence = ";
         cin >> s->licence;
         cout << endl;
+        
     }
+    
+    ~studentinfo(){}
 };
 
 int main()
@@ -115,6 +132,8 @@ int main()
             si->display(s[i]);
         }
     }
-
+    
+    cout << "record count = " << s[0]->getcount() << endl;
+    
     return 0;
 }
