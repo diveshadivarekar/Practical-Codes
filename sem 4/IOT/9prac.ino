@@ -1,10 +1,10 @@
-#define led1 9
-#define led2 10
-#define led3 11
+#define led1 5
+#define led2 6
+#define led3 3
 
 #define p1 A0
-#define p2 A1
-#define p3 A2
+#define p2 A2
+#define p3 A3
 
 void setup()
 {
@@ -15,6 +15,8 @@ void setup()
   pinMode(p1, INPUT);
   pinMode(p2, INPUT);
   pinMode(p3, INPUT);
+
+  Serial.begin(9600);
 }
 
 void loop()
@@ -30,5 +32,13 @@ void loop()
   analogWrite(led1, val1);
   analogWrite(led2, val2);
   analogWrite(led3, val3);
-  delay(10);
+
+  Serial.print("Potentiometer 1: ");
+  Serial.print(val1);
+  Serial.print(" | Potentiometer 2: ");
+  Serial.print(val2);
+  Serial.print(" | Potentiometer 3: ");
+  Serial.println(val3);
+  
+  delay(100);
 }

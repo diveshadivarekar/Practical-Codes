@@ -15,6 +15,7 @@ void loop() {
 
   float tempc = dht.readTemperature();
   float tempf = (tempc * 9.0 / 5.0) + 32.0;
+  float hum = dht.readHumidity();
 
   if (isnan(tempc)) {
     Serial.println("Failed to read from DHT sensor!");
@@ -28,6 +29,10 @@ void loop() {
 
   Serial.print("TemperatureF:");
   Serial.print(tempf);
+  Serial.print("\t");
+
+  Serial.print("Humidity:");
+  Serial.print(hum);
   Serial.println();
 
 }
