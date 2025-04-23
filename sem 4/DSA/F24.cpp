@@ -82,24 +82,24 @@ void deleteEmployee() {
         indexFile.close();
         indexFile.open("index.dat", ios::out | ios::binary | ios::trunc);
         for (const auto& idx : indices) {
-            indexFile.write(reinterpret_cast<char*>(&idx), sizeof(idx));
+            indexFile.write(reinterpret_cast<const char*>(&idx), sizeof(idx)); // Change here
         }
-        
+
         // Create a new data file excluding the deleted employee
         ofstream tempDataFile("temp_employees.dat", ios::binary);
         Employee emp;
         long position;
-        
+
         while (dataFile.read(reinterpret_cast<char*>(&emp), sizeof(emp))) {
             position = dataFile.tellg();
             if (position != indexEntry.position) {
-                tempDataFile.write(reinterpret_cast<char*>(&emp), sizeof(emp));
+                tempDataFile.write(reinterpret_cast<const char*>(&emp), sizeof(emp)); // Change here
             }
         }
-        
+
         dataFile.close();
         tempDataFile.close();
-        
+
         // Replace the original file with the temp file
         remove("employees.dat");
         rename("temp_employees.dat", "employees.dat");
@@ -111,6 +111,7 @@ void deleteEmployee() {
 
     indexFile.close();
 }
+
 
 void displayEmployee() {
     int empID;
