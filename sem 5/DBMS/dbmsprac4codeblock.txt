@@ -1,0 +1,90 @@
+CREATE database PR4; 
+
+use  PR4; 
+
+CREATE TABLE Borrower ( 
+    Roll_no INT PRIMARY KEY, 
+    Name VARCHAR(50), 
+    Date_of_Issue DATE, 
+    Name_of_Book VARCHAR(100), 
+    Status CHAR(1) 
+); 
+ 
+CREATE TABLE Fine ( 
+    Roll_no INT, 
+    Date_of_Return DATE, 
+    Amt NUMERIC(10,2) 
+); 
+ 
+INSERT INTO Borrower VALUES (101, 'Aarav Patil', 
+'2025-10-05', 'DBMS', 'I'); 
+INSERT INTO Borrower VALUES (102, 'Sneha 
+Joshi', '2025-10-15', 'AI Fundamentals', 'I'); 
+INSERT INTO Borrower VALUES (103, 'Rohan 
+Deshmukh','2025-10-25', 'Networking', 'I'); 
+
+COMMIT; 
+DELIMITER $$ 
+ 
+CREATE PROCEDURE Return_Book( 
+    IN p_roll_no INT, 
+    IN p_book_name VARCHAR(100) 
+) 
+BEGIN 
+    DECLARE v_date_issue DATE; 
+    DECLARE v_days INT; 
+    DECLARE v_fine_amt DECIMAL(10,2) DEFAULT 
+0; 
+    DECLARE v_today DATE DEFAULT CURDATE(); 
+ 
+    -- ✅ Fetch issue date 
+    SELECT Date_of_Issue 
+      INTO v_date_issue 
+      FROM Borrower 
+     WHERE Roll_no = p_roll_no 
+       AND Name_of_Book = p_book_name 
+       AND Status = 'I' 
+     LIMIT 1;
+        -- ✅ Calculate days difference 
+    SET v_days = DATEDIFF(v_today, v_date_issue); 
+   
+ 
+  -- ✅ Fine calculation 
+    IF v_days <= 15 THEN 
+        SET v_fine_amt = 0; 
+        SELECT 'No fine. Book returned within 15 
+days.' AS message; 
+    ELSEIF v_days <= 30 THEN 
+        SET v_fine_amt = (v_days - 15) * 5; 
+        SELECT CONCAT('Fine = Rs ', v_fine_amt, ' (₹5 
+per day after 15 days)') AS message; 
+    ELSE 
+        SET v_fine_amt = (v_days - 30) * 50 + (15 * 
+5); 
+ 
+        SELECT CONCAT('Fine = Rs ', v_fine_amt, ' 
+(₹50 per day after 30 days)') AS message; 
+    END IF; 
+ 
+    -- ✅ Update borrower status 
+    UPDATE Borrower 
+       SET Status = 'R' 
+     WHERE Roll_no = p_roll_no 
+       AND Name_of_Book = p_book_name 
+       AND Status = 'I'; 
+ 
+    -- ✅ Insert fine if applicable 
+    IF v_fine_amt > 0 THEN 
+        INSERT INTO Fine (Roll_no, Date_of_Return, 
+Amt) 
+        VALUES (p_roll_no, v_today, v_fine_amt); 
+    END IF; 
+ 
+    SELECT 'Transaction Completed Successfully.' 
+AS message; 
+ 
+END$$ 
+ 
+DELIMITER ; 
+CALL Return_Book(101, 'DBMS'); 
+CALL Return_Book(102, 'AI Fundamentals'); 

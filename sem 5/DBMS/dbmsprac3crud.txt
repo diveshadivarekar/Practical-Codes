@@ -1,0 +1,71 @@
+Mongosh 
+
+show dbs
+ 
+use StudentDB 
+ 
+db.createCollection("students")
+ 
+db.students.insertOne({ 
+  name: "Aarav Patil", 
+  age: 20, 
+  department: "Computer Science", 
+  marks: 85 
+}) 
+ 
+db.students.insertMany([ 
+  { name: "Sneha Joshi", age: 21, department: "IT", marks: 90 }, 
+  { name: "Rohan Deshmukh", age: 22, department: "Mechanical", marks: 70 }, 
+  { name: "Priya Kale", age: 20, department: "Computer Science", marks: 95 }, 
+  { name: "Vikram Pawar", age: 23, department: "Civil", marks: 60 } 
+]) 
+ 
+db.students.find() 
+db.students.find().pretty() 
+ 
+db.students.find({ department: "Computer Science" }) 
+ 
+db.students.updateOne( 
+  { name: "Rohan Deshmukh" }, 
+  { $set: { marks: 75 } } 
+) 
+ 
+db.students.updateMany( 
+  { department: "Computer Science" }, 
+  { $inc: { marks: 5 } } 
+) 
+ 
+db.students.deleteOne({ name: "Vikram Pawar" }) 
+db.students.deleteMany({ department: "Mechanical" }) 
+ 
+db.students.find({ 
+  $and: [ 
+    { department: "Computer Science" }, 
+    { marks: { $gt: 80 } } 
+  ] 
+}) 
+
+
+db.students.find({ 
+  $or: [ 
+    { department: "Computer Science" }, 
+    { department: "IT" } 
+  ] 
+})
+
+ 
+db.students.find({
+  department: { $ne: "Civil" }
+})
+
+
+db.students.find({
+  department: { $in: ["Computer Science", "IT"] }
+})
+
+
+db.students.find().sort({ marks: -1 })     --Descending order
+db.students.find().limit(3)                -- Show top 3 students
+
+db.students.drop() 
+db.dropDatabase()

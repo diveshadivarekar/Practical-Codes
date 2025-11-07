@@ -1,0 +1,97 @@
+CREATE TABLE Students ( 
+    student_id INT PRIMARY KEY 
+AUTO_INCREMENT, 
+    name VARCHAR(50), 
+    age INT, 
+    department VARCHAR(50) 
+); 
+ 
+CREATE TABLE Courses ( 
+    course_id INT PRIMARY KEY 
+AUTO_INCREMENT, 
+    course_name VARCHAR(50), 
+    credits INT 
+); 
+ 
+CREATE TABLE Enrollments ( 
+    enrollment_id INT PRIMARY KEY 
+AUTO_INCREMENT, 
+    student_id INT, 
+    course_id INT, 
+    grade CHAR(2), 
+    FOREIGN KEY (student_id) REFERENCES 
+Students(student_id), 
+    FOREIGN KEY (course_id) REFERENCES 
+Courses(course_id) 
+); 
+ 
+INSERT INTO Students (name, age, department) 
+VALUES 
+('Aarav Patil', 20, 'Computer Science'), 
+('Sneha Joshi', 21, 'IT'), 
+('Rohan Deshmukh', 22, 'Mechanical'), 
+('Priya Kale', 20, 'Computer Science'), 
+('Vikram Pawar', 23, 'Civil'); 
+ 
+INSERT INTO Courses (course_name, credits) 
+VALUES 
+('DBMS', 4), 
+('Operating Systems', 3), 
+('Networking', 3), 
+('Data Structures', 4), 
+('AI Fundamentals', 3); 
+ 
+INSERT INTO Enrollments (student_id, course_id, 
+grade) VALUES 
+(1, 1, 'A'),(1, 2, 'B'),(2, 1, 'A'),(2, 3, 'A'),(3, 4, 'C'), 
+(4, 5, 'A'),(5, 2, 'B');
+
+
+SELECT s.name, c.course_name, e.grade 
+FROM Students s 
+INNER JOIN Enrollments e ON s.student_id = e.student_id 
+INNER JOIN Courses c ON e.course_id = c.course_id; 
+ 
+SELECT s.name, c.course_name 
+FROM Students s 
+LEFT JOIN Enrollments e ON s.student_id = e.student_id 
+LEFT JOIN Courses c ON e.course_id = c.course_id; 
+ 
+SELECT s.name, c.course_name 
+FROM Students s 
+RIGHT JOIN Enrollments e ON s.student_id = e.student_id 
+RIGHT JOIN Courses c ON e.course_id = c.course_id; 
+ 
+SELECT s.name, c.course_name 
+FROM Students s 
+LEFT JOIN Enrollments e ON s.student_id = e.student_id 
+LEFT JOIN Courses c ON e.course_id = c.course_id 
+UNION 
+SELECT s.name, c.course_name 
+FROM Students s 
+RIGHT JOIN Enrollments e ON s.student_id = e.student_id 
+RIGHT JOIN Courses c ON e.course_id = c.course_id; 
+ 
+SELECT s.name, c.course_name 
+FROM Students s 
+CROSS JOIN Courses c; 
+ 
+SELECT name 
+FROM Students 
+WHERE student_id IN ( 
+    SELECT student_id FROM Enrollments WHERE grade = 'A' 
+); 
+ 
+CREATE VIEW StudentCourseView AS 
+SELECT s.name AS student_name, c.course_name, e.grade 
+FROM Students s 
+JOIN Enrollments e ON s.student_id = e.student_id 
+JOIN Courses c ON e.course_id = c.course_id; 
+ 
+SELECT * FROM StudentCourseView; 
+ 
+SELECT department, AVG(age) AS avg_age 
+FROM Students 
+WHERE student_id IN (SELECT student_id FROM Enrollments WHERE 
+grade = 'A') 
+GROUP BY department;

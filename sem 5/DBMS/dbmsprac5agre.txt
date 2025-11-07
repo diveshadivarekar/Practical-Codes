@@ -1,0 +1,49 @@
+mongosh 
+
+use StudentDB
+ 
+db.students.drop();   // safe reset 
+
+db.students.insertMany([
+  { name: "Aarav", dept: "CS", marks: 85, city: "Pune" },
+  { name: "Sneha", dept: "IT", marks: 90, city: "Mumbai" },
+  { name: "Rohan", dept: "CS", marks: 75, city: "Pune" },
+  { name: "Priya", dept: "IT", marks: 95, city: "Nashik" },
+  { name: "Vikram", dept: "Civil", marks: 60, city: "Pune" }
+])
+
+--Group by Department — find average marks
+db.students.aggregate([
+  { $group: { _id: "$dept", avgMarks: { $avg: "$marks" } } }
+])
+
+--Count students in each city
+db.students.aggregate([
+  { $group: { _id: "$city", totalStudents: { $sum: 1 } } }
+])
+
+--Find top 2 scorers
+db.students.aggregate([
+  { $sort: { marks: -1 } },
+  { $limit: 2 }
+])
+
+--Show only names and marks
+db.students.aggregate([
+  { $project: { _id: 0, name: 1, marks: 1 } }
+])
+
+--Create an index on dept
+db.students.createIndex({ dept: 1 })
+
+--all index
+db.students.getIndexes()
+
+--search using index
+db.students.find({ dept: "CS" })
+
+--delete an index
+db.students.dropIndex({ dept: 1 })
+
+
+

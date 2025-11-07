@@ -1,0 +1,32 @@
+mongosh 
+
+use studentDB 
+
+db.CreateCollection("marks")
+
+db.marks.insertMany([ 
+  { name: "Aarav", subject: "Math", marks: 80 }, 
+  { name: "Aarav", subject: "Science", marks: 90 }, 
+  { name: "Sneha", subject: "Math", marks: 85 }, 
+  { name: "Sneha", subject: "Science", marks: 95 }, 
+  { name: "Rohan", subject: "Math", marks: 70 }, 
+  { name: "Rohan", subject: "Science", marks: 60 } 
+]) 
+
+var mapFunction = function() { 
+  emit(this.name, this.marks); 
+}; 
+
+var reduceFunction = function(key, values) { 
+  return Array.sum(values); 
+}; 
+
+
+db.marks.mapReduce( 
+  mapFunction, 
+  reduceFunction, 
+  { out: "total_marks" }  // Output collection name 
+) 
+
+
+db.total_marks.find().pretty() 

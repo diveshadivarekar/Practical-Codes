@@ -1,0 +1,79 @@
+-- Step 1: Create and Use Database
+CREATE DATABASE IF NOT EXISTS PR7;
+USE PR7;
+
+-- Step 2: Create Old and New Tables
+CREATE TABLE IF NOT EXISTS O_Roll_Call (
+    Roll_No INT PRIMARY KEY,
+    Name VARCHAR(50)
+);
+
+CREATE TABLE IF NOT EXISTS N_Roll_Call (
+    Roll_No INT,
+    Name VARCHAR(50)
+);
+
+-- Step 3: Insert Sample Data
+INSERT INTO O_Roll_Call VALUES 
+(101, 'Aarav'),
+(102, 'Sneha');
+
+INSERT INTO N_Roll_Call VALUES 
+(102, 'Sneha'),
+(103, 'Rohan'),
+(104, 'Neha');
+
+COMMIT;
+
+-- Step 4: Create Log Table (to see what happened)
+CREATE TABLE IF NOT EXISTS Merge_Log (
+    action_msg VARCHAR(100)
+);
+
+-- Step 5: Create Stored Procedure
+DELIMITER $$
+
+CREATE PROCEDURE Merge_Roll_Calls()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE v_roll INT;
+    DECLARE v_name VARCHAR(50);
+
+    -- Cursor to loop through records in N_Roll_Call
+    DECLARE cur CURSOR FOR 
+        SELECT Roll_No, Name FROM N_Roll_Call;
+
+    -- Handler to stop when no more rows are found
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO v_roll, v_name;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Check if roll already exists in old table
+        IF (SELECT COUNT(*) FROM O_Roll_Call WHERE Roll_No = v_roll) = 0 THEN
+            INSERT INTO O_Roll_Call VALUES (v_roll, v_name);
+            INSERT INTO Merge_Log VALUES (CONCAT('Inserted: ', v_roll, ' - ', v_name));
+        ELSE
+            INSERT INTO Merge_Log VALUES (CONCAT('Skipped (already exists): ', v_roll));
+        END IF;
+    END LOOP;
+
+    CLOSE cur;
+
+    INSERT INTO Merge_Log VALUES ('✅ Merge completed successfully.');
+END$$
+
+DELIMITER ;
+
+-- Step 6: Execute Procedure
+CALL Merge_Roll_Calls();
+
+-- Step 7: View Results
+SELECT * FROM O_Roll_Call;
+SELECT * FROM Merge_Log;
+drop database pr7;

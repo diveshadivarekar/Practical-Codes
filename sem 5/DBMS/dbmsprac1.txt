@@ -1,0 +1,96 @@
+-- Step 1: Create Database
+CREATE DATABASE IF NOT EXISTS StudentDB;
+
+-- Step 2: Use the Database
+USE StudentDB;
+CREATE TABLE Students (
+    Student_ID INT PRIMARY KEY AUTO_INCREMENT,
+    First_Name VARCHAR(50) NOT NULL,
+    Last_Name VARCHAR(50),
+    Email VARCHAR(100) UNIQUE,
+    DOB DATE,
+    City VARCHAR(50),
+    CONSTRAINT chk_city CHECK (City IN ('Pune', 'Mumbai', 'Delhi', 'Bangalore'))
+);
+
+CREATE TABLE Courses (
+    Course_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Course_Name VARCHAR(100) NOT NULL,
+    Duration_Months INT CHECK (Duration_Months > 0),
+    Fees DECIMAL(10,2)
+);
+
+CREATE TABLE Enrollments (
+    Enroll_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Student_ID INT,
+    Course_ID INT,
+    Enrollment_Date DATE DEFAULT (CURRENT_DATE),
+    FOREIGN KEY (Student_ID) REFERENCES Students(Student_ID),
+    FOREIGN KEY (Course_ID) REFERENCES Courses(Course_ID)
+);
+
+CREATE VIEW StudentCourseView AS
+SELECT 
+    S.First_Name, S.Last_Name, C.Course_Name, C.Fees, E.Enrollment_Date
+FROM Students S
+JOIN Enrollments E ON S.Student_ID = E.Student_ID
+JOIN Courses C ON C.Course_ID = E.Course_ID;
+
+CREATE INDEX idx_city ON Students(City);
+
+
+-- Insert Students
+INSERT INTO Students (First_Name, Last_Name, Email, DOB, City)
+VALUES 
+('Aarav', 'Sharma', 'aarav@gmail.com', '2003-05-21', 'Pune'),
+('Sneha', 'Patil', 'sneha@gmail.com', '2002-09-12', 'Mumbai'),
+('Rohan', 'Verma', 'rohan@gmail.com', '2004-02-10', 'Delhi');
+
+-- Insert Courses
+INSERT INTO Courses (Course_Name, Duration_Months, Fees)
+VALUES 
+('Data Science', 6, 30000),
+('Web Development', 4, 20000),
+('Database Systems', 3, 15000);
+
+-- Insert Enrollments
+INSERT INTO Enrollments (Student_ID, Course_ID)
+VALUES 
+(1, 1),
+(2, 2),
+(3, 3),
+(1, 3);
+
+SELECT * FROM Students;
+
+SELECT * FROM Courses;
+
+SELECT * FROM StudentCourseView;
+
+SELECT First_Name, Last_Name FROM Students WHERE City = 'Pune';
+
+SELECT City, COUNT(*) AS Total_Students
+FROM Students
+GROUP BY City;
+
+UPDATE Students
+SET City = 'Bangalore'
+WHERE Student_ID = 3;
+
+SELECT * FROM Students ORDER BY First_Name ASC;
+
+DROP VIEW StudentCourseView;
+DROP TABLE Enrollments;
+DROP TABLE Courses;
+DROP TABLE Students;
+
+
+
+
+
+
+
+
+
+
+
