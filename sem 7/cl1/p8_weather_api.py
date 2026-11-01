@@ -2,11 +2,15 @@
 # Get a free key at https://openweathermap.org/api and paste it below.
 # With no key, the script uses data/weather_sample.json (same format as the API reply).
 import json, requests, pandas as pd, matplotlib.pyplot as plt, seaborn as sns
+import sys
 
-API_KEY, CITY = "", "Pune"
+API_KEY, CITY = "7b9809e16822067b61db12489b9ebe47", "Pune"
 if API_KEY:
     url = f"https://api.openweathermap.org/data/2.5/forecast?q={CITY}&appid={API_KEY}&units=metric"
     data = requests.get(url).json()
+    if "list" not in data:   # API returned an error (bad/inactive key, wrong city...)
+        print("API error:", data.get("message", data), "-> using sample data instead")
+        data = json.load(open("data/weather_sample.json"))
 else:
     data = json.load(open("data/weather_sample.json"))
 
