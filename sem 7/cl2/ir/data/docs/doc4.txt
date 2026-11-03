@@ -1,0 +1,1 @@
+A web crawler downloads pages and follows links to build a collection of documents.

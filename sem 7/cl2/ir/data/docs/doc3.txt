@@ -1,0 +1,1 @@
+Stemming reduces words like running, runs and runner to the common root run.

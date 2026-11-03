@@ -1,0 +1,1 @@
+Spam filters classify emails using words and machine learning algorithms.

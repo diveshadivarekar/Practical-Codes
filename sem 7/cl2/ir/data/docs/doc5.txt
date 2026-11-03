@@ -1,0 +1,1 @@
+PageRank ranks web pages by counting the quality and number of links pointing to them.
